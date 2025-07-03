@@ -3,6 +3,9 @@ package com.shanuka.book_network.handler;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
+import java.util.Map;
+import java.util.Set;
+
 @Getter
 @Setter
 @Builder
@@ -12,7 +15,9 @@ import lombok.*;
 public class ExceptionResponse {
 
     private Integer businessErrorCode;
-    private String businessExceptionDescription;
-
+    private String businessErrorDescription;
+    private String error;
+    private Set<String> validationErrors;
+    private Map<String, String> errors;
 
 }
