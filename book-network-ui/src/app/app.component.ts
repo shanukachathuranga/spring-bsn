@@ -1,11 +1,10 @@
 import {Component} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
-import {FaIconComponent} from '@fortawesome/angular-fontawesome';
 import {faCoffee, faDoorOpen} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, FaIconComponent],
+  imports: [RouterOutlet,],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })

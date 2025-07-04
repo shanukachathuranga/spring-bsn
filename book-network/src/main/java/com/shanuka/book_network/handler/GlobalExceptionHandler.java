@@ -2,6 +2,7 @@ package com.shanuka.book_network.handler;
 
 import jakarta.mail.MessagingException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
@@ -13,8 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static com.shanuka.book_network.handler.BusinessErrorCodes.*;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static org.springframework.http.HttpStatus.*;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -61,8 +61,22 @@ public class GlobalExceptionHandler {
 
     }
 
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ExceptionResponse> handleException(HttpMessageNotReadableException exp) {
+        return ResponseEntity
+                .status(BAD_REQUEST)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorCode(BAD_CREDENTIALS.getCode())
+                                .businessErrorDescription("Required request body is missing or malformed")
+                                .error(exp.getMessage())
+                                .build()
+                );
+    }
+
     @ExceptionHandler(MessagingException.class)
     public ResponseEntity<ExceptionResponse> handleException(MessagingException exp) {
+        exp.printStackTrace();
         return ResponseEntity
                 .status(INTERNAL_SERVER_ERROR)
                 .body(
@@ -75,6 +89,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ExceptionResponse> handleException(MethodArgumentNotValidException exp) {
+        exp.printStackTrace();
         Set<String> errors = new HashSet<>();
         exp.getBindingResult().getAllErrors()
                 .forEach(
@@ -84,7 +99,7 @@ public class GlobalExceptionHandler {
                         }
                 );
         return ResponseEntity
-                .status(INTERNAL_SERVER_ERROR)
+                .status(BAD_REQUEST)
                 .body(
                         ExceptionResponse.builder()
                                 .validationErrors(errors)
